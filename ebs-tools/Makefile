@@ -18,7 +18,7 @@ EB_APP?=$(PROJECT_NAME)
 ###############################################################################
 EB_ENV?=$(shell git rev-parse --abbrev-ref HEAD)
 EB_REGION?=us-east-1
-DOCKER_ACCOUNT?=larrykirschner
+DOCKER_ACCOUNT?=
 DOCKER_SERVICES=$(PWD)/bin/docker_services.sh
 EB=eb
 
