@@ -21,12 +21,6 @@ cannonical () {
   echo ${s}
 }
 
-service_tag () {
-  local service_name=$1
-  img=${DOCKER_REGISTRY_PREFIX}${DOCKER_ACCOUNT_PREFIX}${DOCKER_REPO_PREFIX}-${service_name}:${DOCKER_TAG}
-  echo ${img}
-}
-
 ORIGINAL_CALL="$0 $@"
 BIN="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PWD="$(pwd)"
@@ -36,10 +30,11 @@ SERVICES_ROOT=${PROJECT_ROOT}/services
 BUILD_DIR=${PWD}/build
 DOCKER_REPO=$(cannonical ${PROJECT_NAME})
 DOCKER_REPO_PREFIX=${DOCKER_REPO}
-DOCKER_TAG=latest
-DOCKER_REGISTRY=""
+DOCKER_TAG=${DOCKER_TAG}
+DOCKER_TAG_SUFFIX=""
+DOCKER_REGISTRY=${DOCKER_REGISTRY}
 DOCKER_REGISTRY_PREFIX=""
-DOCKER_ACCOUNT=""
+DOCKER_ACCOUNT=${DOCKER_ACCOUNT}
 DOCKER_ACCOUNT_PREFIX=""
 
 source ${BIN}/lib/getopts_long.bash
@@ -54,6 +49,7 @@ while getopts_long ":t:s:p:o:u:r:b: account: build-dir: docker-repo-prefix: serv
       ;;
     't' | 'tag' )
       DOCKER_TAG=${OPTARG}
+      DOCKER_TAG_SUFFIX=":${DOCKER_TAG}"
       ;;
     'p' | 'docker-repo-prefix' )
       DOCKER_REPO=${OPTARG}
@@ -81,6 +77,12 @@ done
 shift $((OPTIND -1))
 
 CMD=$1; shift;
+
+service_tag () {
+  local service_name=$1
+  img=${DOCKER_REGISTRY_PREFIX}${DOCKER_ACCOUNT_PREFIX}${DOCKER_REPO_PREFIX}-${service_name}${DOCKER_TAG_SUFFIX}
+  echo ${img}
+}
 
 case "$CMD" in
         print-service-tag)
