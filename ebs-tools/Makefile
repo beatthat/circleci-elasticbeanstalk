@@ -112,7 +112,7 @@ docker-build:
 .PHONY: docker-login 
 docker-login:
 ifeq ("$(DOCKER_ACCOUNT)","")
-    echo "env var DOCKER_ACCOUNT"
+	echo "env var DOCKER_ACCOUNT"
 	exit 1
 endif
 ifeq ("$(DOCKER_PASSWORD)","")
