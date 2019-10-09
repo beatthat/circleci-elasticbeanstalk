@@ -7,6 +7,7 @@ set -o errexit
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DOCKER_REGISTRY=${DOCKER_REGISTRY}
 DOCKER_REGISTRY_PREFIX=${DOCKER_REGISTRY}${DOCKER_REGISTRY:+/}
+DOCKER_ACCOUNT=${DOCKER_ACCOUNT:-$CIRCLE_PROJECT_USERNAME}
 DOCKER_REPONAME=${DOCKER_REPONAME:-${CIRCLE_PROJECT_REPONAME}}
 
 source ${DIR}/lib/getopts_long.bash
@@ -26,7 +27,7 @@ while getopts_long ":n: reponame:" OPT_KEY; do
 done
 shift $((OPTIND -1))
 
-repo_url="${DOCKER_REGISTRY_PREFIX}${DOCKER_REPONAME}"
+repo_url="${DOCKER_REGISTRY_PREFIX}${DOCKER_ACCOUNT}/${DOCKER_REPONAME}"
 image_latest_tag="${repo_url}:latest"
 image_sha_tag="${repo_url}:${CIRCLE_SHA1}"
 
