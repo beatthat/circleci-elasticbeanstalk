@@ -1,0 +1,43 @@
+version: 2.1
+aliases:
+  - &only-release-tags
+    branches:
+      ignore: /.*/
+    tags:
+      only: /^\d+\.\d+\.\d+(-[a-z\d\-.]+)?$/
+executors:
+  python:
+    docker:
+      - image: circleci/python:3.7.0
+jobs:
+  build_push_tag:
+    executor: python
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: Build and Register Image
+          command: ./ebs-tools/bin/docker_deploy.sh
+workflows:
+  docker_tag_commit:
+    jobs:
+      - tag_commit:
+          type: approval
+          filters:
+            tags:
+              ignore: /.*/
+      - build_push_tag:
+          name: build_push_tag_commit
+          requires:
+            - tag_commit
+  docker_tag_release:
+    jobs:
+      - tag_release:
+          type: approval
+          filters: *only-release-tags
+      - build_push_tag:
+          name: build_push_tag_release
+          filters: *only-release-tags
+          requires:
+            - tag_release
+
