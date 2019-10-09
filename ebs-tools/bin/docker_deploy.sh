@@ -33,7 +33,8 @@ image_sha_tag="${repo_url}:${CIRCLE_SHA1}"
 echo "Building and deploying ${DOCKER_REPONAME} image ..."
 
 # Log-in to ECR.
-eval "$(aws ecr get-login --no-include-email)"
+# eval "$(aws ecr get-login --no-include-email)"
+echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_ACCOUNT} --password-stdin
 
 # Populate some meta-data.
 echo "${CIRCLE_BRANCH}/${CIRCLE_SHA1}" > build-info.txt
