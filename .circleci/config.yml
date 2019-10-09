@@ -13,6 +13,7 @@ jobs:
   build_push_tag:
     executor: python
     steps:
+      - setup_remote_docker
       - checkout
       - run:
           name: Build and Register Image
