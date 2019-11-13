@@ -1,9 +1,13 @@
 FROM circleci/python:3.6
 
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
+    sudo apt-get install -y git-lfs
+    
 RUN sudo apt-get update && \
     sudo apt-get install rsync && \
     sudo apt-get clean && \
     sudo rm -rf /src/*.deb /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 
 # PROJECT_ROOT is path to git checkout. The below is the default
 ENV PROJECT_ROOT=/home/circleci/project
