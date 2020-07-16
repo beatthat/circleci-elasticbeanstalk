@@ -1,6 +1,6 @@
 version: 2.1
 aliases:
-  - &only-release-tags
+  - &tags-only-release
     branches:
       ignore: /.*/
     tags:
@@ -32,12 +32,7 @@ workflows:
             - tag_commit
   docker_tag_release:
     jobs:
-      - tag_release:
-          type: approval
-          filters: *only-release-tags
       - build_push_tag:
           name: build_push_tag_release
-          filters: *only-release-tags
-          requires:
-            - tag_release
+          filters: *tags-only-release
 

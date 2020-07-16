@@ -142,7 +142,6 @@ eb-deploy: $(EB_BUNDLE_ZIP)
 		$(EB) deploy
 
 .PHONY: eb-deploy-to-passive
-eb-find-passive: $(VENV)
-	@ . $(VENV)/bin/activate \
-	&& . bin/eb_utils.sh \
+eb-find-passive:
+	@ . bin/eb_utils.sh \
 	&& eb_utils::env_find_passive "${args}"
