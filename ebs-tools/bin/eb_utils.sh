@@ -8,7 +8,7 @@ eb_utils::env_find_passive() {
   local env_result=''
   for x in ${envs_all}; do
     local status=$(eb status ${x} ${eb_args})
-    if [[ "${status}" == *""* ]]; then
+    if [[ "${status}" == *"CNAME: passive"* ]]; then
       local env_result="${x}"
       break
     fi
