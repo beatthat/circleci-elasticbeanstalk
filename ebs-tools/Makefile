@@ -58,7 +58,7 @@ build/ebs/config: build/ebs/config/Dockerrun.aws.properties build/ebs/config/.el
 # will control the deployment to EBS
 ##############################################################################
 build/ebs/.elasticbeanstalk/config.yml: build/ebs/config/.elasticbeanstalk_config.properties
-	mkdir -p build/ebs
+	mkdir -p build/ebs/.elasticbeanstalk
 	cp -r $(PROJECT_ROOT)/ebs/.elasticbeanstalk build/ebs/.elasticbeanstalk
 	python bin/apply_properties.py \
 		$(BUILD)/ebs/config/.elasticbeanstalk_config.properties \
@@ -140,8 +140,11 @@ eb-deploy: $(EB_BUNDLE_ZIP)
 	cd build/ebs && \
 		$(EB) use $(EB_ENV) && \
 		$(EB) deploy
+	@exit $(.SHELLSTATUS)
 
-.PHONY: eb-deploy-to-passive
+.PHONY: eb-find-passive:
 eb-find-passive:
 	@ . bin/eb_utils.sh \
-	&& eb_utils::env_find_passive "${args}"
+		&& cd build/ebs \
+		&& eb_utils::env_find_passive "${args}"
+	@exit $(.SHELLSTATUS)
