@@ -59,7 +59,7 @@ build/ebs/config: build/ebs/config/Dockerrun.aws.properties build/ebs/config/.el
 ##############################################################################
 build/ebs/.elasticbeanstalk/config.yml: build/ebs/config/.elasticbeanstalk_config.properties
 	mkdir -p build/ebs/.elasticbeanstalk
-	cp -r $(PROJECT_ROOT)/ebs/.elasticbeanstalk build/ebs/.elasticbeanstalk
+	cp -r $(PROJECT_ROOT)/ebs/.elasticbeanstalk/* build/ebs/.elasticbeanstalk
 	python bin/apply_properties.py \
 		$(BUILD)/ebs/config/.elasticbeanstalk_config.properties \
 		$(BUILD)/ebs/.elasticbeanstalk/config.yml
