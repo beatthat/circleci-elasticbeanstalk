@@ -137,14 +137,14 @@ docker-push: docker-login
 
 .PHONY: eb-deploy 
 eb-deploy: $(EB_BUNDLE_ZIP)
-	cd build/ebs && \
-		$(EB) use $(EB_ENV) && \
-		$(EB) deploy
+	cd build/ebs \
+		&& $(EB) use $(EB_ENV) \
+		&& $(EB) deploy
 	@exit $(.SHELLSTATUS)
 
-.PHONY: eb-find-passive:
+.PHONY: eb-find-passive
 eb-find-passive:
-	@ . bin/eb_utils.sh \
+	@. bin/eb_utils.sh \
 		&& cd build/ebs \
 		&& eb_utils::env_find_passive "${args}"
 	@exit $(.SHELLSTATUS)
