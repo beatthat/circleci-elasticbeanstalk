@@ -19,6 +19,7 @@ EB_APP?=$(PROJECT_NAME)
 EB_ENV?=$(shell git rev-parse --abbrev-ref HEAD)
 EB_REGION?=us-east-1
 DOCKER_ACCOUNT?=
+DOCKER_ACCOUNT_ARG=$(shell v='$(DOCKER_ACCOUNT)'; echo "$${DOCKER_ACCOUNT:+--account ${DOCKER_ACCOUNT}}")
 DOCKER_SERVICES=$(PWD)/bin/docker_services.sh
 EB=eb
 
@@ -45,7 +46,7 @@ build/ebs/config/.elasticbeanstalk_config.properties:
 build/ebs/config/Dockerrun.aws.properties:
 	mkdir -p build/ebs/config
 	$(DOCKER_SERVICES) \
-			--account $(DOCKER_ACCOUNT) \
+			$(DOCKER_ACCOUNT_ARG) \
 			--docker-repo-prefix $(PROJECT_NAME) \
 			--tag $(BUILD_TAG) \
 			-o $(BUILD)/ebs/config/Dockerrun.aws.properties \
@@ -58,8 +59,8 @@ build/ebs/config: build/ebs/config/Dockerrun.aws.properties build/ebs/config/.el
 # will control the deployment to EBS
 ##############################################################################
 build/ebs/.elasticbeanstalk/config.yml: build/ebs/config/.elasticbeanstalk_config.properties
-	mkdir -p build/ebs
-	cp -r $(PROJECT_ROOT)/ebs/.elasticbeanstalk build/ebs/.elasticbeanstalk
+	mkdir -p build/ebs/.elasticbeanstalk
+	cp -r $(PROJECT_ROOT)/ebs/.elasticbeanstalk/* build/ebs/.elasticbeanstalk
 	python bin/apply_properties.py \
 		$(BUILD)/ebs/config/.elasticbeanstalk_config.properties \
 		$(BUILD)/ebs/.elasticbeanstalk/config.yml
@@ -104,7 +105,7 @@ build: build/ebs/config build/ebs/bundle build/ebs/.elasticbeanstalk
 .PHONY: docker-build 
 docker-build:
 	$(DOCKER_SERVICES) \
-			--account $(DOCKER_ACCOUNT) \
+			$(DOCKER_ACCOUNT_ARG) \
 			--docker-repo-prefix $(PROJECT_NAME) \
 			--tag $(BUILD_TAG) \
 		build
@@ -129,7 +130,7 @@ endif
 .PHONY: docker-push 
 docker-push: docker-login
 	$(DOCKER_SERVICES) \
-			--account $(DOCKER_ACCOUNT) \
+			$(DOCKER_ACCOUNT_ARG) \
 			--docker-repo-prefix $(PROJECT_NAME) \
 			--tag $(BUILD_TAG) \
 		push
@@ -137,6 +138,22 @@ docker-push: docker-login
 
 .PHONY: eb-deploy 
 eb-deploy: $(EB_BUNDLE_ZIP)
-	cd build/ebs && \
-		$(EB) use $(EB_ENV) && \
-		$(EB) deploy
+	cd build/ebs \
+		&& $(EB) use $(EB_ENV) \
+		&& $(EB) deploy
+	@exit $(.SHELLSTATUS)
+
+.PHONY: eb-find-passive
+eb-find-passive:
+	@. bin/eb_utils.sh \
+		&& cd build/ebs \
+		&& eb_utils::env_find_passive "${args}"
+	@exit $(.SHELLSTATUS)
+
+
+.PHONY: eb-swap-active-and-passive
+eb-swap-active-and-passive:
+	@. bin/eb_utils.sh \
+		&& cd build/ebs \
+		&& eb_utils::swap_active_and_passive
+	@exit $(.SHELLSTATUS)
