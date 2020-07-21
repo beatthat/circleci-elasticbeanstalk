@@ -149,3 +149,11 @@ eb-find-passive:
 		&& cd build/ebs \
 		&& eb_utils::env_find_passive "${args}"
 	@exit $(.SHELLSTATUS)
+
+
+.PHONY: eb-swap-active-and-passive
+eb-swap-active-and-passive:
+	@. bin/eb_utils.sh \
+		&& cd build/ebs \
+		&& eb_utils::swap_active_and_passive
+	@exit $(.SHELLSTATUS)
