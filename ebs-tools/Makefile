@@ -19,6 +19,7 @@ EB_APP?=$(PROJECT_NAME)
 EB_ENV?=$(shell git rev-parse --abbrev-ref HEAD)
 EB_REGION?=us-east-1
 DOCKER_ACCOUNT?=
+DOCKER_ACCOUNT_ARG=$(shell v='$(DOCKER_ACCOUNT)'; echo "$${DOCKER_ACCOUNT:+--account ${DOCKER_ACCOUNT}}")
 DOCKER_SERVICES=$(PWD)/bin/docker_services.sh
 EB=eb
 
@@ -45,7 +46,7 @@ build/ebs/config/.elasticbeanstalk_config.properties:
 build/ebs/config/Dockerrun.aws.properties:
 	mkdir -p build/ebs/config
 	$(DOCKER_SERVICES) \
-			--account $(DOCKER_ACCOUNT) \
+			$(DOCKER_ACCOUNT_ARG) \
 			--docker-repo-prefix $(PROJECT_NAME) \
 			--tag $(BUILD_TAG) \
 			-o $(BUILD)/ebs/config/Dockerrun.aws.properties \
@@ -104,7 +105,7 @@ build: build/ebs/config build/ebs/bundle build/ebs/.elasticbeanstalk
 .PHONY: docker-build 
 docker-build:
 	$(DOCKER_SERVICES) \
-			--account $(DOCKER_ACCOUNT) \
+			$(DOCKER_ACCOUNT_ARG) \
 			--docker-repo-prefix $(PROJECT_NAME) \
 			--tag $(BUILD_TAG) \
 		build
@@ -129,7 +130,7 @@ endif
 .PHONY: docker-push 
 docker-push: docker-login
 	$(DOCKER_SERVICES) \
-			--account $(DOCKER_ACCOUNT) \
+			$(DOCKER_ACCOUNT_ARG) \
 			--docker-repo-prefix $(PROJECT_NAME) \
 			--tag $(BUILD_TAG) \
 		push
